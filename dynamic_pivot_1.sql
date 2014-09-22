@@ -5,6 +5,7 @@ as
   -- concatenate the years into comma-separated string
   min_year_visits int := minvisits;
   all_years_str varchar2(4000);
+  
   -- base pivot_data query
   pivot_data varchar2(4000) :=
   'select wc.patient_num, sex_cd, ethno, race_cd, vital_status_cd,
@@ -13,13 +14,16 @@ as
   join patient_yr_visits pyv
   on pyv.patient_num = wc.patient_num
   where N > 0 and BMI_OR_OBESITY > 0';
+  
   -- dynamic query
   sql_query varchar2(4000);
+  
   -- aggregate function, field to pivot
   agg_func varchar(100) := 'sum';
   agg_field varchar(100) := 'N';
   agg_col varchar(100) := 'sum';
   agg_for varchar(100):= 'yr';
+  
   -- output
   out_table varchar(100) := 'pivot_out';
 
