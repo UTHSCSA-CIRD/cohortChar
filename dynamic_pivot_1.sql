@@ -1,6 +1,9 @@
 /**
  Creates a table in the current users schema (assuming you have privileges)
  (see out_table varchar(100) := 'pivot_out';)
+
+ input:
+ minvisits - threshold to find first year where any patient had at least this # of visits
 */
 
 CREATE OR REPLACE procedure dynamic_pivot(minvisits in number)
@@ -34,14 +37,12 @@ as
 
 begin
 
-  select
-  listagg( yr, ',' ) within group( order by yr ) as
-  into all_years_str
+  select listagg( yr, ',' ) within group( order by yr ) into all_years_str
   from (
-  select distinct yr from patient_yr_visits
-  where yr >= (select min(yr) from patient_yr_visits where n >= min_year_visits)
-  and yr <= to_char(sysdate,'YYYY')
-  order by yr
+   select distinct yr from patient_yr_visits
+   where yr >= (select min(yr) from patient_yr_visits where n >= min_year_visits)
+   and yr <= to_char(sysdate,'YYYY')
+   order by yr
   );
   
   sql_query :=
