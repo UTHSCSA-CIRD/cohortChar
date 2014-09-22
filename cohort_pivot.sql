@@ -36,16 +36,22 @@ case
  when age_in_years_num <= 65 then '18-65 years'
  when age_in_years_num <= 85 then '65-85 years'
  else '85+ years'
-end age_group from blueherondata.patient_dimension)
+end age_group from blueherondata.patient_dimension),
+exc as (
+  select patient_num,count(*) exclusions_diag 
+  from blueherondata.observation_fact 
+  where concept_cd in (select concept_cd from concepts_obesity)
+  group by patient_num)
 
-select pd.*,bmi_or_obesity,visits,eth.ethno,ages.age_group 
+select pd.*,bmi_or_obesity,visits
+, eth.ethno, ages.age_group, exc.exclusions_diag
 from blueherondata.patient_dimension pd 
 left join bmiob on pd.patient_num = bmiob.patient_num
 left join last2yrs on pd.patient_num = last2yrs.patient_num
 left join eth on pd.patient_num = eth.patient_num
 left join ages on pd.patient_num = ages.patient_num
+left join exc on pd.patient_num = exc.patient_num
 ;
-
 
 -- create table of patients and how many distinct START_DATEs each
 -- had during each year when they had visits
@@ -89,11 +95,10 @@ select wc.patient_num, sex_cd,ethno,race_cd,vital_status_cd,marital_status_cd
   ,age_group,yr,n 
   from weightcohort wc join patient_yr_visits pyv
   on wc.patient_num = pyv.patient_num
-  where N>0 and BMI_OR_OBESITY>0)
+  where N>0 and BMI_OR_OBESITY>0 and EXCLUSIONS_DIAG is NULL )
 pivot(
   sum(n) cnt
 FOR yr IN (
   1986,1987,1989,1996,1997,1998,1999, 2000, 2001, 2002, 2003, 2004, 
   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014)
 );
-
