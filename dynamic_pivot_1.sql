@@ -50,4 +50,5 @@ end; -- sub block
 execute immediate sql_query;
 end;
 /
+
 execute dynamic_pivot(5);
