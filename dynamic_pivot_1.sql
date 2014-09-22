@@ -1,3 +1,8 @@
+/**
+ Creates a table in the current users schema (assuming you have privileges)
+ (see out_table varchar(100) := 'pivot_out';)
+*/
+
 CREATE OR REPLACE procedure dynamic_pivot(minvisits in number)
 AUTHID CURRENT_USER
 as
