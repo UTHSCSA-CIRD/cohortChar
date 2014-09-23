@@ -132,14 +132,17 @@ select * from (select
   ,marital_status_cd,ethno,age_group
   -- yr is always going to be here and will be an integer
   ,yr
-  -- this can vary; for the tables as defined here it can be one of:
-  -- visits bmi_or_ob, exclusions_diag, cholesterol, lipid_panels
+  -- what to count: this can vary; for the tables as defined here 
+  -- it can be one of: 
+  -- visits, bmi_or_ob, exclusions_diag, cholesterol, lipid_panels
   ,bmi_or_ob
   from patient_counts_yr0)
 pivot(
   -- can be either...
-  -- count(visits) patients
+  -- count(FOO) patients
   -- ...or...
+  -- sum(FOO) visits
+  -- ...where FOO is whatever was chosen as "what to count" above
   sum(bmi_or_ob) visits
 FOR yr IN (
   -- might be nice to have dynamically settable (or even guessable) years
