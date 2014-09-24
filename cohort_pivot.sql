@@ -56,8 +56,9 @@ tot as (select patient_num,yr,count(*) visits
   from (select distinct patient_num,yr,start_date from patient_yr_conc)
   group by patient_num,yr),
 /*** BEGIN STUDY-SPECIFIC ALIASED SUBQUERIES ***/
--- there may be some way to read the names an corresponding criteria 
+-- there may be some way to read the names and corresponding criteria 
 -- from a table and dynamically write the rather repetitious SQL below
+
 -- total # BMI measurements or obesity diagnoses for each patient each year
 bmiob as (select patient_num,yr,count(*) bmi_or_ob 
   from (select distinct patient_num,yr,start_date from patient_yr_conc
@@ -99,7 +100,7 @@ amph as(
   group by patient_num,yr)
 /*** END STUDY-SPECIFIC ALIASED SUBQUERIES ***/
 -- what should be selected can be inferred from what aliased subqueries were
--- created in addition to what columns exist in PATIENT_DIMENSION
+-- created in addition to what columns are of interest in PATIENT_DIMENSION
 select pd.patient_num, sex_cd,race_cd,vital_status_cd,marital_status_cd,
 ethno, age_group, tot.yr, visits, bmi_or_ob, exclusions_diag, cholesterol, lipid_panels
 from tot 
