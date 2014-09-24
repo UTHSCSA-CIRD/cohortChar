@@ -31,11 +31,8 @@ define name7 = ;
 define crit7 = ;
 */
 -- which years to do counts for?
+-- might be nice to have dynamically settable (or even guessable) years
 define year_range = "1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014"
--- what columns should be on the left of the pivot-table?
-define pivotvars = "sex_cd,race_cd,vital_status_cd,marital_status_cd,ethno,age_group";
--- how to order the pivot output?
-define pivotorder = "vital_status_cd,ethno,race_cd,sex_cd,marital_status_cd,age_group";
 define vnames = "&&name0 , &&name1 , &&name2 , &&name3 , &&name4 , &&name5 ";
 
 /*** exclusion diagnoses specific to obesity cohort ***/
@@ -200,24 +197,22 @@ on tot.patient_num = pd.patient_num
 ;
 
 -- The Pivot:
+-- what to count this can vary; for the tables as defined here it can be one of: 
+--   visits, bmi_or_ob, exclusions_diag, cholesterol, lipid_panels
+define pivoton = visits;
+-- define pivotbody = "count( &pivoton ) &pivoton._patients";
+define pivotbody = "sum( &pivoton ) &pivoton._visits";
+-- what are the cohort inclusion criteria?
+define pivotcrit = "where sex_cd != '@' ";
+-- what columns should be on the left of the pivot-table?
+define pivotvars = "sex_cd,race_cd,vital_status_cd,marital_status_cd,ethno,age_group";
+-- how to order the pivot output?
+define pivotorder = "vital_status_cd,ethno,race_cd,sex_cd,marital_status_cd,age_group";
+
 -- total number of visits each year by patients grouped by the below criteria
-select * from (select &pivotvars
+select * from (select &pivotvars, yr, &pivoton
   -- yr is always going to be here and will be an integer
-  ,yr
-  -- what to count: this can vary; for the tables as defined here 
-  -- it can be one of: 
-  -- visits, bmi_or_ob, exclusions_diag, cholesterol, lipid_panels
-  ,visits
-  from patient_counts_yr0)
-pivot(
-  -- can be either...
-  -- count(FOO) patients
-  -- ...or...
-  -- sum(FOO) visits
-  -- ...where FOO is whatever was chosen as "what to count" above
-  count(visits) patients
-FOR yr IN ( &year_range )
-  -- might be nice to have dynamically settable (or even guessable) years
-)
+  from patient_counts_yr0 &pivotcrit )
+pivot( &pivotbody FOR yr IN ( &year_range ))
 order by &pivotorder
 ;
