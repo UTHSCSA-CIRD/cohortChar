@@ -200,6 +200,9 @@ on tot.patient_num = pd.patient_num
 -- what to count this can vary; for the tables as defined here it can be one of: 
 --   visits, bmi_or_ob, exclusions_diag, cholesterol, lipid_panels
 define pivoton = visits;
+-- what to do with the counts: sum them or count them? summation gives number 
+-- of visits, counting the values give number of patients
+-- choose one of the two valid definitions of pivotbody below:
 -- define pivotbody = "count( &pivoton ) &pivoton._patients";
 define pivotbody = "sum( &pivoton ) &pivoton._visits";
 -- what are the cohort inclusion criteria?
