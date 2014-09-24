@@ -135,7 +135,7 @@ select * from (select
   -- what to count: this can vary; for the tables as defined here 
   -- it can be one of: 
   -- visits, bmi_or_ob, exclusions_diag, cholesterol, lipid_panels
-  ,bmi_or_ob
+  ,visits
   from patient_counts_yr0)
 pivot(
   -- can be either...
@@ -143,7 +143,7 @@ pivot(
   -- ...or...
   -- sum(FOO) visits
   -- ...where FOO is whatever was chosen as "what to count" above
-  sum(bmi_or_ob) visits
+  count(visits) patients
 FOR yr IN (
   -- might be nice to have dynamically settable (or even guessable) years
   1999, 2000, 2001, 2002, 2003, 2004, 
